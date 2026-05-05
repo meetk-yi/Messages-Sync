@@ -18,7 +18,7 @@ async function appendToSheet(data) {
 
     const sheets = google.sheets({ version: 'v4', auth });
     const spreadsheetId = process.env.SPREADSHEET_ID;
-    const range = `${process.env.SHEET_NAME}!A:D`;
+    const range = `'${process.env.SHEET_NAME}'!A:D`;
 
     // Convert message objects to rows
     const rows = data.map(msg => [
