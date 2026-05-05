@@ -1,0 +1,6 @@
+node_modules
+.env
+user_data
+credentials.json
+state.json
+.DS_Store
