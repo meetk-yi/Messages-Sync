@@ -5,6 +5,7 @@ Automated script to scrape new messages from a Teams channel and store them in G
 ## Features
 - **2FA Support**: Uses persistent browser profiles.
 - **Deduplication**: Only syncs messages since the last run.
+- **AI-Powered Summaries**: Uses Google Gemini to turn raw message threads into clean, contextual summaries.
 - **Headless Mode**: Can run in the background.
 
 ## Prerequisites

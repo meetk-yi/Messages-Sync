@@ -18,14 +18,22 @@ async function appendToSheet(data) {
 
     const sheets = google.sheets({ version: 'v4', auth });
     const spreadsheetId = process.env.SPREADSHEET_ID;
-    const range = `'${process.env.SHEET_NAME}'!A:D`;
+    const range = `'${process.env.SHEET_NAME}'!A:C`;
+    
+    const options = { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true 
+    };
 
     // Convert message objects to rows
     const rows = data.map(msg => [
-        msg.timestamp,
-        msg.title,
-        msg.description,
-        msg.link
+        new Date(msg.timestamp).toLocaleString('en-IN', options),
+        msg.author,
+        msg.aiMessage
     ]);
 
     try {

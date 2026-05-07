@@ -141,18 +141,27 @@ async function scrapeTeamsMessages() {
                 const text = item.innerText || '';
                 const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
                 
+                // Usually: [0] Sender, [1] Time, [2] Title/Subject, [3] Description/Summary, [4+] Message
                 const sender = lines[0] || 'Unknown';
                 const timeStr = lines.find(l => timePattern.test(l)) || '';
                 const timestamp = parseTeamsDate(timeStr);
                 
-                const content = lines.slice(2).join(' ').substring(0, 500);
+                // Find where the content starts (after the time)
+                const timeIndex = lines.indexOf(timeStr);
+                const contentLines = lines.slice(timeIndex + 1);
+                
+                // Based on user request: Title, Description, and then a Message
+                const msgTitle = contentLines[0] || sender; // Fallback to sender if no title
+                const msgDescription = contentLines[1] || 'N/A';
+                const msgBody = contentLines.slice(2).join('\n') || contentLines[0] || 'No Content';
 
                 return {
                     id: item.getAttribute('id') || item.getAttribute('data-id') || Math.random().toString(36),
-                    title: sender,
-                    description: content || 'No Content',
-                    timestamp: timestamp,
-                    link: window.location.href
+                    author: sender,
+                    title: msgTitle,
+                    description: msgDescription,
+                    message: msgBody,
+                    timestamp: timestamp
                 };
             });
         });

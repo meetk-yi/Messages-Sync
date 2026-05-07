@@ -21,7 +21,11 @@ async function runSync() {
     console.log('🏁 Starting Sync Process...');
     
     try {
-        const state = loadState();
+        let state = loadState();
+        if (process.argv.includes('--full-sync')) {
+            console.log('🔄 Full sync mode enabled. Ignoring state file...');
+            state.lastRun = new Date(0).toISOString();
+        }
         console.log(`🕒 Last run: ${state.lastRun}`);
 
         const messages = await scrapeTeamsMessages();
@@ -37,11 +41,24 @@ async function runSync() {
         }
 
         console.log(`✨ Found ${newMessages.length} new messages.`);
+        
+        const { generateContextualMessage } = require('./ai');
+
+        // Process each message with AI
+        const processedMessages = [];
+        for (const msg of newMessages) {
+            console.log(`🧠 AI is processing message from ${msg.author}...`);
+            const contextualMessage = await generateContextualMessage(msg);
+            processedMessages.push({
+                ...msg,
+                aiMessage: contextualMessage
+            });
+        }
 
         // Sort by timestamp ascending before appending
-        newMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        processedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-        await appendToSheet(newMessages);
+        await appendToSheet(processedMessages);
 
         // Update state with the newest message timestamp
         const latestTimestamp = newMessages[newMessages.length - 1].timestamp;
